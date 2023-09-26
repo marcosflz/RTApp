@@ -5,6 +5,8 @@ This project was developed during my degree´s final thesis which consisted of a
 
 The app works with the serial comunication between python and an arduino nano to which all the sensors are conected. The arduino itself has its own code as well so it ensures the correct print to serial of the data collected from the sensors. It also has a port comunication list to select the activated one in each PC.
 
+The modules connected to the protoboard and which are used in the .ino code are the HX711 amplificator for the Load Cell and the MAX6675 thermocouple amplificator. The pressure sensor was initially planned to be installed but due to logistic and lack of time issues it wasn´t included.
+
 
 ![alt text](https://github.com/marcosflz/RTApp/blob/main/Images/RApp_Results.png)
 ![alt text](https://github.com/marcosflz/RTApp/blob/main/Images/EsquemaConexiones.jpg)
