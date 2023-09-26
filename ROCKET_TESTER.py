@@ -267,5 +267,4 @@ canvas = FigureCanvasTkAgg(press_plot, master=root)
 canvas.draw()
 canvas.get_tk_widget().grid(row=3, column=2, sticky="nsew")
 
-
 root.mainloop() #DISPLAY LOOP
