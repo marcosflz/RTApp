@@ -5,4 +5,9 @@ This project was developed during my degree´s final thesis which consisted of a
 
 The app works with the serial comunication between python and an arduino nano to which all the sensors are conected. The arduino itself has its own code as well so it ensures the correct print to serial of the data collected from the sensors.
 
-![alt text](https://github.com/marcosflz/RTApp/blob/main/RApp_Results.png)
+//
+
+![alt text](https://github.com/marcosflz/RTApp/blob/main/Images/RApp_Results.png)
+![alt text](https://github.com/marcosflz/RTApp/blob/main/Images/RApp_Results.png)
+![alt text](https://github.com/marcosflz/RTApp/blob/main/Images/RApp_Results.png)
+![alt text](https://github.com/marcosflz/RTApp/blob/main/Images/RApp_Results.png)
