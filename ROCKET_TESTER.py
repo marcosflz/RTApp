@@ -1,4 +1,5 @@
-#IMPORTING ALL NECESSARY LIBRARIES
+# CODIGO DE LA APLICACION ROCKET TESTER APP PARA EL ENSAYO DE MOTORES COHETE
+
 import  tkinter as      tk
 from    tkinter import  ttk
 from    tkinter import  scrolledtext
@@ -13,26 +14,26 @@ import  datetime
 import  time
 import  serial
 
-
+# BUCLE PRINCIPAL PARA LA RECOLECCION DE DATOS
 # MAIN LOOP FOR DATA RECORDING
 
 def start_loop():
 
-    try:                                                    # Will try connection to selected port
+    try:                                                    # Se intentara conectar con el puerto seleccionado. 
         port = serial.Serial(input_port, 9600)             
         check_label.config(text='MODULE CONNECTED')
         port.readline()
-        time.sleep(2)                                       # This helps to stabilize port connection
-    except:                                                 # If exception encountered the function stops
+        time.sleep(2)                                       # Esto ayuda a estabilizar la conexion con el puerto.
+    except:                                                 # Si se da cualquier error la funcion se para.
         check_label.config(text='NO CONNEXION')
         return
 
-    text_box.delete(1.0, tk.END)                            # Restarting the textbox for new data
+    text_box.delete(1.0, tk.END)                            # Se reinicia el cuadro de texto para que aparezcan los nuevos resultados.
 
-    port.write(b'1')                                        # Relay activation signal to arm the engine
+    port.write(b'1')                                        # Sennal de activacion del rele para armar el motor.
     time.sleep(1)
                                                             
-    i = 0                                                   # Data lists
+    i = 0                                                   # Se definen las listas de datos.
     iterations = []     
     thrust_Lecture = []
     temp1_Lecture = []
@@ -40,20 +41,19 @@ def start_loop():
     press_lecture = []
     times = []
 
-    running_label.config(text='SAMPLING')                   # Configurations for information labels                 
-    running_label.config(font=('Arial', 20, 'bold'))
+    running_label.config(text='SAMPLING')                   # Configuraciones para los cuadros de informacion.
     armed_label['text'] = 'IGNITION\nREADY'
     armed_label.config(bg='red',fg='white')
     
 
-    global is_running                                       # Global variable is_running keeps the loop active for recording
+    global is_running                                       # La variable global is_running mantiene el bucle activo para seguir grabando.
     is_running = True
 
     while is_running:
         
-        line = port.readline()                              # Serial monitor line reading 
+        line = port.readline()                              # Lectura de la linea del puerto serial de Arduino. 
         
-        if i == 5:                                          # Give it a few iterations for stabilization 
+        if i == 5:                                          # Se dejan unas pocas iteraciones para estabilizar la medida.
             
             startingTime = time.time()
             text_box.delete(1.0, tk.END)
@@ -77,7 +77,7 @@ def start_loop():
             press_lecture.append(pressRead)
             times.append(np.round(time.time() - startingTime, 3))
             
-            text_box.insert(tk.END,                         # Text box formatting and plot                                   
+            text_box.insert(tk.END,                         # Se formatea y muestra por pantalla los resultados en la caja de texto.                                  
                 'IT'        + str(i-5)                                      + '\t' + 
                 't(s) = '   + str('{:.3f}'.format(times[-1]))               + '\t' + 
                 'F(kg) = '  + str('{:.4f}'.format(thrust_Lecture[-1]))      + '\t' +
@@ -90,10 +90,10 @@ def start_loop():
 
         i += 1
 
-    port.write(b'0')                                        # Relay deactivation signal
+    port.write(b'0')                                        # Sennal de desactivacion del rele.
     time.sleep(1)
 
-    # THRUST PLOT CONFIGURATION AND DISPLAY AFTER READING DATA
+    # CONFIGURACION DE LA GRAFICA DE EMPUJE DESPUES DE GRABAR LOS DATOS
 
     thrust_plot = Figure()
     thrust_plot.set_figheight(2.5)
@@ -107,7 +107,7 @@ def start_loop():
     canvas.draw()
     canvas.get_tk_widget().grid(row=1, column=2, sticky="nsew")
 
-    # TEMPERATURE PLOT CONFIGURATION AND DISPLAY AFTER READING DATA
+    # CONFIGURACION DE LA GRAFICA DE TEMPERATURA DESPUES DE GRABAR LOS DATOS
 
     temp_plot = Figure()
     temp_plot.set_figheight(2.5)
@@ -123,7 +123,7 @@ def start_loop():
     canvas.draw()
     canvas.get_tk_widget().grid(row=2, column=2, sticky="nsew")
 
-    # PRESSURE PLOT CONFIGURATION AND DISPLAY AFTER READING DATA
+    # CONFIGURACION DE LA GRAFICA DE PRESION DESPUES DE GRABAR LOS DATOS
 
     press_plot = Figure()
     press_plot.set_figheight(2.5)
@@ -137,20 +137,20 @@ def start_loop():
     canvas.draw()
     canvas.get_tk_widget().grid(row=3, column=2, sticky="nsew")
 
-    # RESULTS FOR EXPORTATION 
+    # RESULTADOS PARA EXPORTAR
 
     results = pd.DataFrame(list(zip(iterations, times, thrust_Lecture, temp1_Lecture, temp2_Lecture, press_lecture)),columns=['IT', 't(s)', 'F(kg)', 'T1(K)', 'T2(K)', 'P(pa)'])               
     now = datetime.datetime.now()
     results.to_csv('TestsFiles\\test_'+ now.strftime('%H_%M') +'.csv', index=False)
 
-    # SET INFO LABEL BACK TO DISARMED AND CLOSE THE PORT
+    # SE VUELVE A REINICIAR LAS ETIQUETAS DE INFORMACION PARA INDICAR EL CESE DE LA GRABACION Y SE CIERRA LA CONEXION CON EL PUERTO
 
     armed_label['text'] = 'CHECK LIST\nPROCEDURE'
     armed_label.config(bg='green',fg='white')
     port.close()
 
     
-# FUNCTION TO STOP MAIN LOOP AND CHANGE INFO LABEL
+# FUNCION PARA PARAR EL BUCLE PRINCIPAL Y CAMBIAR INFORMACION DE CUADROS INDICATIVOS 
 
 def stop_loop():    
     global is_running
@@ -159,7 +159,7 @@ def stop_loop():
     running_label.config(font=('Arial', 20, 'bold'))
 
     
-# APP DISPLAY CONFIGURATION
+# CONFIGURACION GRAFICA DE LA APP
 
 root = tk.Tk()
 screenWidth = root.winfo_screenwidth()/1.1
@@ -167,37 +167,33 @@ screenHeight = root.winfo_screenheight()/1.1
 root.geometry("%dx%d" % (screenWidth,screenHeight))
 root.title("Rocket tester App")
 
-# ROW CONFIGURATION TO GET SAME SIZE
-
 root.grid_rowconfigure(0, weight=1)
 root.grid_rowconfigure(1, weight=1)
 root.grid_rowconfigure(2, weight=1)
 root.grid_rowconfigure(3, weight=1)
-
-# COLUMN CONFIGURATION TO GET SAME SIZE
 
 root.grid_columnconfigure(0, weight=1)
 root.grid_columnconfigure(1, weight=1)
 root.grid_columnconfigure(2, weight=1)
 
 
-# FUNCTION TO GET PORT ID
+# FUNCION PARA OBTENER LA ID DEL PUERTO
 
 def get_port(event):
     global input_port
     input_port = port_combobox.get()
 
-input_port = ""                                         # Variable Initialization
-ports = ["COM" + str(i) for i in range(0, 257)]          # Setting up port list
+input_port = ""                                         # Inicializacion de la Variable.
+ports = ["COM" + str(i) for i in range(0, 257)]          # Creacion de la lista de puertos.
 
-port_combobox = ttk.Combobox(root, values=ports)        # Combobox menu list creation with ports
+port_combobox = ttk.Combobox(root, values=ports)        # Creacion de la lista desplegable de puertos.
 port_combobox.grid(row=0, column=0, sticky='nwse')      
 port_combobox.config(font=('Arial', 20))
 port_combobox.bind("<<ComboboxSelected>>", get_port)
 port_combobox.focus_set()
 
 
-# INFO LABELS CONFIGURATION
+# CONFIGURACION DE ETIQUETAS INDICATIVAS.
 
 check_label = tk.Label(root, text="CONNECTING...")
 check_label.grid(row=0, column=1, sticky='nwse')
@@ -212,7 +208,7 @@ armed_label.grid(row=3, column=0, sticky='nwse')
 armed_label.config(font=('Arial', 30, 'bold'))
 
 
-# BUTTONS CONFIGURATION
+# CONFIGURACION DE BOTONES
 
 start_button = tk.Button(root, text='Read\nSensors', command=start_loop)
 start_button.grid(row=1, column=0, sticky='nwse')
@@ -223,13 +219,13 @@ stop_button.grid(row=2, column=0, sticky='nwse')
 stop_button.config(font=('Arial', 30, 'bold'))
 
 
-# TEXT BOX CONFIGURATION
+# CONFIGURACION DE LA CAJA DE TEXTO
 
 text_box = scrolledtext.ScrolledText(root, height=20, width=90)
 text_box.grid(row=1, column=1, rowspan=3, sticky="nsew")
 
 
-# PLOT INITIALIZATION
+# INICIALIZACION DE LAS GRAFICAS
 
 thrust_plot = Figure()
 thrust_plot.set_figheight(2.5)
@@ -267,4 +263,8 @@ canvas = FigureCanvasTkAgg(press_plot, master=root)
 canvas.draw()
 canvas.get_tk_widget().grid(row=3, column=2, sticky="nsew")
 
-root.mainloop() #DISPLAY LOOP
+
+
+
+
+root.mainloop() # INICIA LA VENTANA GRAFICA DE USUARIO. 
